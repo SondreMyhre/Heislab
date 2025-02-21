@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <unistd.h> 
+#include "driver/elevio.h"
 #include "fsm.h"
 
 
@@ -19,41 +20,68 @@ void elevator_fsm() {
     switch (currentState) {
         case INITIALIZING:
             printf("Heis: Søker etter etasje");
-            currentFloor = 1; 
-            currentState = AT_FLOOR;
-            break;
-
-        case AT_FLOOR:
-            printf("Heis: Står stille i etasje %d. Venter på bestilling.", currentFloor);
-            destinationFloor = exec_scan_orders(); // Sjekker bestillinger
-            
-            if (destinationFloor != -1) {
-                if (currentFloor < destinationFloor) {
-                    currentState = MOVING_UP;
-                } else if (currentFloor > destinationFloor) {
-                    currentState = MOVING_DOWN;
+            while(currentFloor == -1) {
+                elevio_motorDirection(DIRN_DOWN);
+                currentFloor = elevio_floorSensor();
+                if (currentFloor != -1) {
+                    elevio_motorDirection(DIRN_STOP);
+                    elevio_floorIndicator(currentFloor);
+                    currentState = AT_FLOOR;
                 }
             }
             break;
 
+        case AT_FLOOR:
+            printf("Heis: Står stille i etasje %d. Venter på bestilling.", currentFloor);
+            elevio_doorOpenLamp(1);
+            sleep(3);
+            elevio_doorOpenLamp(0);
+            
+            destinationFloor = exec_scan_orders(); // Sjekker bestillinger
+            
+           
+            if (currentFloor < destinationFloor) {
+                currentState = MOVING_UP;
+            } else if (currentFloor > destinationFloor) {
+                currentState = MOVING_DOWN;
+            } else if (currentFloor == destinationFloor) {
+                currentState = AT_FLOOR;
+            }
+            break;
+
+
         case MOVING_UP:
             printf("Heis: Kjører oppover");
             sleep(1);
-            currentFloor++;
-            
-            if (currentFloor == destinationFloor) {
-                currentState = AT_FLOOR;
+            elevio_motorDirection(DIRN_UP);
+
+            while (currentFloor < destinationFloor) {
+                int floor = elevio_floorSensor();
+                if (floor != -1) {
+                    currentFloor = floor;
+                    elevio_floorIndicator(currentFloor);
+                }
             }
+            
+            elevio_motorDirection(DIRN_STOP);
+            currentState = AT_FLOOR;
             break;
 
         case MOVING_DOWN:
             printf("Heis: Kjører nedover");
             sleep(1);
-            currentFloor--;
+            elevio_motorDirection(DIRN_DOWN);
             
-            if (currentFloor == destinationFloor) {
-                currentState = AT_FLOOR;
+            while (currentFloor > destinationFloor) {
+                int floor = elevio_floorSensor();
+                if (floor != -1) {
+                    currentFloor = floor;
+                    elevio_floorIndicator(currentFloor);
+                }
             }
+            
+            elevio_motorDirection(DIRN_STOP);
+            currentState = AT_FLOOR;
             break;
 
         /*case DOOR_OPEN:
@@ -76,6 +104,8 @@ void elevator_fsm() {
             break;*/
 
         case EMERGENCY_STOP_FLOOR:
+            elevio_motorDirection(DIRN_STOP);
+            elevio_doorOpenLamp(1);
             printf("Heis: Nødstopp aktivert! Står stille.");
             if (!stopButtonPressed && currentFloor != -1) {
                 currentState = INITIALIZING;
