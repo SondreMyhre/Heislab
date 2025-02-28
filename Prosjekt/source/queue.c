@@ -30,12 +30,14 @@ void clearOrderMatrix(OrderMatrix *M, int floor) {
     }
 }
 
-int getNextDestination(OrderMatrix *M, int currentFloor, int previousFloor) {
+int getNextDestination(OrderMatrix *M, int currentFloor, int direction) {
     int nextDestination = -1;
-    if(previousFloor == -1) { //NO DIRECTION
+    if(direction == DIRN_STOP) { //NO DIRECTION
         for (int i = currentFloor; i < NUM_FLOORS; i++) {
             if (getOrderStatus(M, CABIN, i)) {
-                nextDestination = i;
+                if(nextDestination == -1 || i < nextDestination){
+                    nextDestination = i;
+                }
             }
             if (getOrderStatus(M, HALL_UP, i)) {
                 if(nextDestination == -1 || i < nextDestination){
@@ -47,12 +49,14 @@ int getNextDestination(OrderMatrix *M, int currentFloor, int previousFloor) {
                     nextDestination = i;
                 }
             }
-        } if(nextDestination != -1){
+        } if(nextDestination != -1 && nextDestination != currentFloor){
             return nextDestination;
         }
         for (int i = currentFloor; i >= 0; i--) {
             if (getOrderStatus(M, CABIN, i)) {
-                nextDestination = i;
+                if(nextDestination == -1 || i > nextDestination){
+                    nextDestination = i;
+                }
             }
             if (getOrderStatus(M, HALL_DOWN, i)) {
                 if(nextDestination == -1 || i > nextDestination){
@@ -64,15 +68,17 @@ int getNextDestination(OrderMatrix *M, int currentFloor, int previousFloor) {
                     nextDestination = i;
                 }
             }
-        } if(nextDestination != -1){
+        } if(nextDestination != -1 && nextDestination != currentFloor){
             return nextDestination;
         }
         return nextDestination;
         
-    } else if (previousFloor < currentFloor) { //DIRECTION UP
+    } else if (direction == DIRN_UP) { //DIRECTION UP
         for (int i = currentFloor; i < NUM_FLOORS; i++) {
             if (getOrderStatus(M, CABIN, i)) {
-                nextDestination = i;
+                if(nextDestination == -1 || i < nextDestination){
+                    nextDestination = i;
+                }
             }
             if (getOrderStatus(M, HALL_UP, i)) {
                 if(nextDestination == -1 || i < nextDestination){
@@ -84,33 +90,37 @@ int getNextDestination(OrderMatrix *M, int currentFloor, int previousFloor) {
                     nextDestination = i;
                 }
             }
-        } if(nextDestination != -1){
+        } if(nextDestination != -1 && nextDestination != currentFloor){
             return nextDestination;
         }
 
         for (int i = currentFloor; i >= 0; i--) {
             if (getOrderStatus(M, CABIN, i)) {
-                nextDestination = i;
+                if(nextDestination == -1 || i > nextDestination){
+                    nextDestination = i;
+                }
             }
             if (getOrderStatus(M, HALL_DOWN, i)) {
-                if(nextDestination == -1 || i < nextDestination){
+                if(nextDestination == -1 || i > nextDestination){
                     nextDestination = i;
                 }
             }
             if (getOrderStatus(M, HALL_UP, i)) {
-                if(nextDestination == -1 || i < nextDestination){
+                if(nextDestination == -1 || i > nextDestination){
                     nextDestination = i;
                 }
             }
-        } if(nextDestination != -1){
+        } if(nextDestination != -1 && nextDestination != currentFloor){
             return nextDestination;
         }
         return nextDestination;
 
-    } else if (previousFloor > currentFloor) { //DIRECTION DOWN
+    } else if (direction == DIRN_DOWN) { //DIRECTION DOWN
         for (int i = currentFloor; i >= 0; i--) {
             if (getOrderStatus(M, CABIN, i)) {
-                nextDestination = i;
+                if(nextDestination == -1 || i > nextDestination){
+                    nextDestination = i;
+                }
             }
             if (getOrderStatus(M, HALL_DOWN, i)) {
                 if(nextDestination == -1 || i > nextDestination){
@@ -122,28 +132,34 @@ int getNextDestination(OrderMatrix *M, int currentFloor, int previousFloor) {
                     nextDestination = i;
                 }
             }
-        } if(nextDestination != -1){
+        } if(nextDestination != -1 && nextDestination != currentFloor){
             return nextDestination;
         }
 
         for (int i = currentFloor; i < NUM_FLOORS; i++) {
             if (getOrderStatus(M, CABIN, i)) {
-                nextDestination = i;
+                if(nextDestination == -1 || i < nextDestination){
+                    nextDestination = i;
+                }
             }
             if (getOrderStatus(M, HALL_UP, i)) {
-                if(nextDestination == -1 || i > nextDestination){
+                if(nextDestination == -1 || i < nextDestination){
                     nextDestination = i;
                 }
             }
             if (getOrderStatus(M, HALL_DOWN, i)) {
-                if(nextDestination == -1 || i > nextDestination){
+                if(nextDestination == -1 || i < nextDestination){
                     nextDestination = i;
                 }
             }
-        } if(nextDestination != -1){
+        } if(nextDestination != -1 && nextDestination != currentFloor){
             return nextDestination;
         }
-        return nextDestination;
+        
     }
-    return nextDestination;
+    if(nextDestination != currentFloor){
+        return nextDestination;
+    } else {
+        return -1;
+    }
 }

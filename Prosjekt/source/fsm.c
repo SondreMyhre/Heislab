@@ -11,6 +11,7 @@ int currentFloor = -1;
 int stopButtonPressed = 0;
 int obstructionDetected = 0;
 int destinationFloor = -1;
+int direction = DIRN_STOP;
 OrderMatrix orderMatrix;
 
 void orderScanner() {
@@ -42,21 +43,24 @@ void elevator_fsm() {
                 elevio_motorDirection(DIRN_DOWN);
                 currentFloor = elevio_floorSensor();    
                 if (currentFloor != -1) {
+
                     elevio_motorDirection(DIRN_STOP);
                     elevio_floorIndicator(currentFloor);
                     printf("Heis: Står i etasje %d", currentFloor);
+                    direction = DIRN_STOP;
                     currentState = IDLE;
                 }
             }
             break;
 
         case IDLE:
+            direction = DIRN_STOP;
             orderScanner();
             elevio_floorIndicator(currentFloor);
             //clearScreen();
             //printf("Heis: Står stille i etasje %d. Venter på bestilling.", currentFloor);
             orderScanner();
-            destinationFloor = getNextDestination(&orderMatrix, currentFloor, destinationFloor);
+            destinationFloor = getNextDestination(&orderMatrix, currentFloor, direction);
             if (destinationFloor < 0) {
                 break;
             } else if (currentFloor < destinationFloor) {
@@ -77,7 +81,7 @@ void elevator_fsm() {
             //elevio_doorOpenLamp(1);
             //sleepScan(3000); // 3 sekunder (3000 ms)
             //elevio_doorOpenLamp(0);
-            destinationFloor = getNextDestination(&orderMatrix, currentFloor, destinationFloor);     
+            destinationFloor = getNextDestination(&orderMatrix, currentFloor, direction);     
             if (destinationFloor < 0) {
                 currentState = IDLE;
             } else if (currentFloor < destinationFloor) {
@@ -91,11 +95,11 @@ void elevator_fsm() {
 
 
         case MOVING_UP:
+            direction = DIRN_UP;
             orderScanner();
             clearScreen();
             //printf("Heis: Kjører oppover");
             elevio_motorDirection(DIRN_UP);
-            int floor = elevio_floorSensor();
             while (currentFloor < destinationFloor) {
                 int floor = elevio_floorSensor();
                 if (floor != -1) {
@@ -103,7 +107,7 @@ void elevator_fsm() {
                     elevio_floorIndicator(currentFloor);
                 }
                 orderScanner();
-                destinationFloor = getNextDestination(&orderMatrix, currentFloor, destinationFloor);
+                destinationFloor = getNextDestination(&orderMatrix, currentFloor, direction);
             }
             
             elevio_motorDirection(DIRN_STOP);
@@ -111,13 +115,14 @@ void elevator_fsm() {
             break;
 
         case MOVING_DOWN:
+            direction = DIRN_DOWN;
             orderScanner();
             clearScreen();
             //printf("Heis: Kjører nedover");
             elevio_motorDirection(DIRN_DOWN);
             while (currentFloor > destinationFloor) {
                 orderScanner();
-                destinationFloor = getNextDestination(&orderMatrix, currentFloor, destinationFloor);
+                destinationFloor = getNextDestination(&orderMatrix, currentFloor, direction);
                 int floor = elevio_floorSensor();
                 if (floor != -1) {
                     currentFloor = floor;
