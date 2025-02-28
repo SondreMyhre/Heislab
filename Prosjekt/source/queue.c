@@ -4,7 +4,8 @@
 void initOrderMatrix(OrderMatrix *M) {
     for (int i = 0; i < NUM_BUTTONS; i++) {
         for (int j = 0; j < NUM_FLOORS; j++) {
-            M->orders[i][j] = 0;
+            setOrderStatus(M, i, j, 0);
+
         }
     }
 }
