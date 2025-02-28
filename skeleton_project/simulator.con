@@ -20,4 +20,5 @@ simulator.con
 --key_moveUp            9
 --key_moveStop          8
 --key_moveDown          7
+>>>>>>> 23ca7dc (Laget ordrehåndteringssystem, elevator.c)
 --key_moveInbounds      0
