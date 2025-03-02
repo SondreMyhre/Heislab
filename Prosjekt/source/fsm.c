@@ -1,0 +1,160 @@
+#include <stdio.h>
+#include <unistd.h>
+#include "driver/elevio.h"
+#include "fsm.h"
+#include "queue.h"
+
+ElevatorState currentState = INITIALIZING;
+int currentFloor = -1; 
+int stopButtonPressed = 0;
+int obstructionDetected = 0;
+int destinationFloor = -1;
+int direction = DIRN_STOP;
+
+void elevator_fsm() {
+    orderScanner();
+    
+    switch (currentState) {
+        case INITIALIZING:
+            printf("Heis: Søker etter etasje\n");
+            while(currentFloor == -1) {
+                elevio_motorDirection(DIRN_DOWN);
+                currentFloor = elevio_floorSensor();    
+                if (currentFloor != -1) {
+                    elevio_motorDirection(DIRN_STOP);
+                    elevio_floorIndicator(currentFloor);
+                    printf("Heis: Står i etasje %d\n", currentFloor);
+                    direction = DIRN_STOP;
+                    currentState = IDLE;
+                }
+            }
+            break;
+
+        case IDLE:
+            direction = DIRN_STOP;
+            orderScanner();
+            elevio_floorIndicator(currentFloor);
+            if (queue_has_orders()) {
+                destinationFloor = queue_get_next_order(currentFloor, direction);
+                if (destinationFloor > currentFloor) {
+                    currentState = MOVING_UP;
+                } else if (destinationFloor < currentFloor) {
+                    currentState = MOVING_DOWN;
+                } else {
+                    currentState = AT_DESTINATION;
+                }
+            }
+            break;
+
+        case AT_DESTINATION:
+            orderScanner();
+            elevio_floorIndicator(currentFloor);
+            elevio_doorOpenLamp(1);
+            sleep(3);
+            elevio_doorOpenLamp(0);
+            queue_clear_floor_orders(currentFloor);
+            if (queue_has_orders()) {
+                destinationFloor = queue_get_next_order(currentFloor, direction);
+                if (destinationFloor > currentFloor) {
+                    currentState = MOVING_UP;
+                } else if (destinationFloor < currentFloor) {
+                    currentState = MOVING_DOWN;
+                }
+            } else {
+                currentState = IDLE;
+            }
+            break;
+
+        case MOVING_UP:
+            direction = DIRN_UP;
+            orderScanner();
+            elevio_motorDirection(DIRN_UP);
+            while (currentFloor < destinationFloor) {
+                int floor = elevio_floorSensor();
+                if (floor != -1) {
+                    currentFloor = floor;
+                    elevio_floorIndicator(currentFloor);
+                    if (queue_get_next_order(currentFloor, direction) == currentFloor) {
+                        currentState = AT_DESTINATION;
+                        elevio_motorDirection(DIRN_STOP);
+                        break;
+                    }
+                }
+            }
+            break;
+
+        case MOVING_DOWN:
+            direction = DIRN_DOWN;
+            orderScanner();
+            elevio_motorDirection(DIRN_DOWN);
+            while (currentFloor > destinationFloor) {
+                int floor = elevio_floorSensor();
+                if (floor != -1) {
+                    currentFloor = floor;
+                    elevio_floorIndicator(currentFloor);
+                    if (queue_get_next_order(currentFloor, direction) == currentFloor) {
+                        currentState = AT_DESTINATION;
+                        elevio_motorDirection(DIRN_STOP);
+                        break;
+                    }
+                }
+            }
+            break;
+
+        case EMERGENCY_STOP_FLOOR:
+            elevio_motorDirection(DIRN_STOP);
+            if (!stopButtonPressed && currentFloor != -1) {
+                currentState = INITIALIZING;
+            }
+            break;
+
+        case EMERGENCY_STOP_SHAFT:
+            elevio_motorDirection(DIRN_STOP);
+            if (!stopButtonPressed && currentFloor == -1) {
+                currentState = INITIALIZING;
+            }
+            break;
+    }
+}
+
+void elevator_init() {
+    elevio_init();
+    currentState = INITIALIZING;
+    currentFloor = -1;
+    stopButtonPressed = 0;
+    obstructionDetected = 0;
+    destinationFloor = -1;
+}
+
+void elevator_request_floor(int floor) {
+    queue_add_order(floor, BUTTON_CAB);
+}
+
+void elevator_clear_stop() {
+    stopButtonPressed = 0;
+    currentState = INITIALIZING;
+}
+
+void elevator_set_obstruction(int status) {
+    obstructionDetected = status;
+}
+
+ElevatorState elevator_get_state() {
+    return currentState;
+}
+
+int elevator_get_current_floor() {
+    return currentFloor;
+}
+
+void sleepScan(int milliseconds) {
+    for (int i = 0; i < milliseconds; i++) {
+        orderScanner();
+        usleep(1000);
+    }
+}
+
+void clearScreen() {
+    printf("\033[H\033[J");
+    usleep(1000);
+}
