@@ -15,6 +15,5 @@ void queue_clear_floor_orders(int floor);
 int queue_has_orders();
 int queue_get_next_order(int current_floor, int direction);
 void orderScanner();
-void elevator_control();
 
 #endif 

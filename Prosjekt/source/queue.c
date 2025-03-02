@@ -63,42 +63,4 @@ void orderScanner() {
     }
 }
 
-void elevator_control() {
-    static int current_floor = -1;
-    static int direction = DIRN_STOP;
-    
-    while (1) {
-        order_handler();
-        
-        int floor_sensor = elevio_floorSensor();
-        if (floor_sensor != -1) {
-            current_floor = floor_sensor;
-            elevio_floorIndicator(current_floor);
-        }
-        
-        if (queue_has_orders()) {
-            int next_floor = queue_get_next_order(current_floor, direction);
-            
-            if (next_floor == -1) {
-                direction = (direction == DIRN_UP) ? DIRN_DOWN : DIRN_UP;
-                next_floor = queue_get_next_order(current_floor, direction);
-            }
-            
-            if (next_floor != -1) {
-                direction = (next_floor > current_floor) ? DIRN_UP : DIRN_DOWN;
-                elevio_motorDirection(direction);
-            }
-            
-            if (current_floor == next_floor) {
-                elevio_motorDirection(DIRN_STOP);
-                queue_clear_floor_orders(current_floor);
-                elevio_doorOpenLamp(1);
-                sleep(3);
-                elevio_doorOpenLamp(0);
-            }
-        } else {
-            elevio_motorDirection(DIRN_STOP);
-        }
-    }
-}
 

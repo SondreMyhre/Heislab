@@ -4,21 +4,12 @@
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/**",
-<<<<<<< HEAD
-                "/home/aabystro/Documents/TTK4235/Heislab 1/Heislab/Project/source/driver"
-            ],
-            "defines": [],
-            "intelliSenseMode": "gcc-x64",
-            "cStandard": "gnu17",
-            "cppStandard": "gnu++17"
-=======
                 "${workspaceFolder}/Prosjekt/source/driver"
             ],
             "defines": [],
             "cStandard": "c17",
             "cppStandard": "c++17",
             "intelliSenseMode": "linux-clang-x64"
->>>>>>> sondre
         }
     ],
     "version": 4
