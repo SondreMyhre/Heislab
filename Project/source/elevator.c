@@ -1,4 +1,4 @@
-#include "elevator.h"
+/*#include "elevator.h"
 #include "fsm.h"
 #include "door.h"
 #include "elevio.h"
@@ -67,7 +67,7 @@ int order_next(int currentFloor, MotorDirection direction) {
 
 void order_handle() {
     if (!order_exists()) {
-        fsm_set_state(AT_FLOOR);
+        fsmSetState(AT_FLOOR);
         return;
     }
     
@@ -96,3 +96,4 @@ int checkOrderStatus() {
         }
         return -1;
     }
+*/

@@ -23,5 +23,6 @@ void elevator_set_obstruction(bool status);
 
 ElevatorState elevator_get_state();
 int elevator_get_current_floor();
+void fsmSetState(ElevatorState newState);
 
 #endif 

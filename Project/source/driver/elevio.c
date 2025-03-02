@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <pthread.h>
 #include <netdb.h>
+#include <netinet/in.h>
 
 #include "elevio.h"
 #include "con_load.h"

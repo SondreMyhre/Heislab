@@ -1,7 +1,5 @@
-#ifndef ORDER_H
-#define ORDER_H
-
 #include <stdbool.h>
+#include "driver/elevio.h"
 
 #define N_FLOORS 4
 
@@ -15,5 +13,3 @@ bool order_exists();
 int order_next(int currentFloor, MotorDirection direction);
 void order_handle();
 int exec_scan_orders();
-
-#endif // ORDER_H
