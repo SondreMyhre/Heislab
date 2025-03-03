@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "elevio.h"
+#include "order.h"
 
 #define N_FLOORS 4
 #define N_BUTTONS 3
