@@ -49,6 +49,14 @@ int queue_get_next_order(int current_floor, int direction) {
                 }
             }
         }
+    } else if (direction == DIRN_STOP) {
+        for (int f = 0; f < N_FLOORS; f++) {
+            for (int b = 0; b < N_BUTTONS; b++) {
+                if (orders[f][b]) {
+                    return f;
+                }
+            }
+        }
     }
     return -1;
 }

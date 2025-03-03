@@ -32,11 +32,16 @@ void elevator_fsm() {
 
         case IDLE:
             direction = DIRN_STOP;
+            elevio_motorDirection(direction);
             orderScanner();
             elevio_floorIndicator(currentFloor);
             if (queue_has_orders()) {
                 destinationFloor = queue_get_next_order(currentFloor, direction);
-                if (destinationFloor > currentFloor) {
+                if (destinationFloor == -1) {
+                    elevio_motorDirection(DIRN_STOP);
+                    currentState = IDLE;
+                    break;
+                } else if (destinationFloor > currentFloor) {
                     currentState = MOVING_UP;
                 } else if (destinationFloor < currentFloor) {
                     currentState = MOVING_DOWN;
@@ -55,7 +60,11 @@ void elevator_fsm() {
             queue_clear_floor_orders(currentFloor);
             if (queue_has_orders()) {
                 destinationFloor = queue_get_next_order(currentFloor, direction);
-                if (destinationFloor > currentFloor) {
+                if (destinationFloor == -1) {
+                    elevio_motorDirection(DIRN_STOP);
+                    currentState = IDLE;
+                    break;
+                } else if (destinationFloor > currentFloor) {
                     currentState = MOVING_UP;
                 } else if (destinationFloor < currentFloor) {
                     currentState = MOVING_DOWN;
@@ -74,13 +83,13 @@ void elevator_fsm() {
                 if (floor != -1) {
                     currentFloor = floor;
                     elevio_floorIndicator(currentFloor);
-                    if (queue_get_next_order(currentFloor, direction) == currentFloor) {
-                        currentState = AT_DESTINATION;
-                        elevio_motorDirection(DIRN_STOP);
-                        break;
-                    }
                 }
+                //if (queue_get_next_order(currentFloor, direction) == currentFloor) {
+                orderScanner();
+                destinationFloor = queue_get_next_order(currentFloor, direction);
             }
+            elevio_motorDirection(DIRN_STOP);
+            currentState = AT_DESTINATION;
             break;
 
         case MOVING_DOWN:
@@ -88,17 +97,17 @@ void elevator_fsm() {
             orderScanner();
             elevio_motorDirection(DIRN_DOWN);
             while (currentFloor > destinationFloor) {
+                orderScanner();
+                destinationFloor = queue_get_next_order(currentFloor, direction);
                 int floor = elevio_floorSensor();
                 if (floor != -1) {
                     currentFloor = floor;
                     elevio_floorIndicator(currentFloor);
-                    if (queue_get_next_order(currentFloor, direction) == currentFloor) {
-                        currentState = AT_DESTINATION;
-                        elevio_motorDirection(DIRN_STOP);
-                        break;
-                    }
                 }
+                //if (queue_get_next_order(currentFloor, direction) == currentFloor) { 
             }
+            elevio_motorDirection(DIRN_STOP);
+            currentState = AT_DESTINATION;
             break;
 
         case EMERGENCY_STOP_FLOOR:
