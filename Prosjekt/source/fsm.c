@@ -268,13 +268,12 @@ void elevator_fsm() {
         while (elevio_stopButton()) {
             usleep(100000); 
         }
-        sleep(3);
+        elevio_stopLamp(0); 
         while (elevio_obstruction()) {
             usleep(100000);
         }
         sleep(3);
         elevio_doorOpenLamp(0); 
-        elevio_stopLamp(0); 
 
         if (queue_has_orders()) {
             destinationFloor = queue_get_next_order(currentFloor, direction);
