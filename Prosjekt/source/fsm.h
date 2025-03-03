@@ -6,9 +6,8 @@ typedef enum {
     IDLE,
     MOVING_UP,
     MOVING_DOWN,
-    EMERGENCY_STOP_FLOOR,
     INITIALIZING,
-    EMERGENCY_STOP_SHAFT
+    STOP
 
 
 } ElevatorState;

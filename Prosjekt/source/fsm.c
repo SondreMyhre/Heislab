@@ -55,11 +55,34 @@ void elevator_fsm() {
         orderScanner();
         elevio_floorIndicator(currentFloor);
         elevio_motorDirection(DIRN_STOP); 
+
+        if (elevio_stopButton()) {
+            currentState = STOP;
+            break;
+        }
         elevio_doorOpenLamp(1);
+        queue_clear_floor_orders(currentFloor);
+
+        for (int i = 0; i < 30; i++) { 
+            usleep(100000);
+            if (elevio_stopButton()) {
+                currentState = STOP;
+                break;
+            }
+        }
+        if (currentState == STOP) break;
+        while (elevio_obstruction()) {
+            usleep(100000);
+            if (elevio_stopButton()) { 
+                currentState = STOP;
+                break;
+            }
+        }
+        if (currentState == STOP) break;
         sleep(3);
         elevio_doorOpenLamp(0);
         
-        queue_clear_floor_orders(currentFloor);
+
     
         if (queue_has_orders_in_direction(direction, currentFloor)) {
             destinationFloor = queue_get_next_order(currentFloor, direction);
@@ -82,6 +105,11 @@ void elevator_fsm() {
         while (1) {
             orderScanner();
             int floor = elevio_floorSensor();
+
+            if (elevio_stopButton()) {
+                currentState = STOP;
+                break;
+            }
             
             if (floor != -1) {
                 currentFloor = floor;
@@ -104,6 +132,11 @@ void elevator_fsm() {
         while (1) {
             orderScanner();
             int floor = elevio_floorSensor();
+
+            if (elevio_stopButton()) {
+                currentState = STOP;
+                break;
+            }
             
             if (floor != -1) {
                 currentFloor = floor;
@@ -223,19 +256,33 @@ void elevator_fsm() {
         }
         break;
 */
-        case EMERGENCY_STOP_FLOOR:
-            elevio_motorDirection(DIRN_STOP);
-            if (!stopButtonPressed && currentFloor != -1) {
-                currentState = INITIALIZING;
-            }
-            break;
+        case STOP:
+        elevio_motorDirection(DIRN_STOP); 
+        elevio_stopLamp(1); 
+        for (int f = 0; f < N_FLOORS; f++) {
+            queue_clear_floor_orders(f);
+        }
+        if (currentFloor != -1) {
+            elevio_doorOpenLamp(1);
+        }
+        while (elevio_stopButton()) {
+            usleep(100000); 
+        }
+        sleep(3);
+        while (elevio_obstruction()) {
+            usleep(100000);
+        }
+        sleep(3);
+        elevio_doorOpenLamp(0); 
+        elevio_stopLamp(0); 
 
-        case EMERGENCY_STOP_SHAFT:
-            elevio_motorDirection(DIRN_STOP);
-            if (!stopButtonPressed && currentFloor == -1) {
-                currentState = INITIALIZING;
-            }
-            break;
+        if (queue_has_orders()) {
+            destinationFloor = queue_get_next_order(currentFloor, direction);
+            currentState = (destinationFloor > currentFloor) ? MOVING_UP : MOVING_DOWN;
+        } else {
+            currentState = IDLE;
+        }
+        break;
     }
 }
 
