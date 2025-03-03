@@ -52,64 +52,177 @@ void elevator_fsm() {
             break;
 
         case AT_DESTINATION:
-            orderScanner();
-            elevio_floorIndicator(currentFloor);
-            elevio_doorOpenLamp(1);
-            sleep(3);
-            elevio_doorOpenLamp(0);
-            queue_clear_floor_orders(currentFloor);
-            if (queue_has_orders()) {
-                destinationFloor = queue_get_next_order(currentFloor, direction);
-                if (destinationFloor == -1) {
-                    elevio_motorDirection(DIRN_STOP);
-                    currentState = IDLE;
-                    break;
-                } else if (destinationFloor > currentFloor) {
-                    currentState = MOVING_UP;
-                } else if (destinationFloor < currentFloor) {
-                    currentState = MOVING_DOWN;
-                }
-            } else {
-                currentState = IDLE;
-            }
-            break;
-
+        orderScanner();
+        elevio_floorIndicator(currentFloor);
+        elevio_motorDirection(DIRN_STOP); 
+        elevio_doorOpenLamp(1);
+        sleep(3);
+        elevio_doorOpenLamp(0);
+        
+        queue_clear_floor_orders(currentFloor);
+    
+        if (queue_has_orders_in_direction(direction, currentFloor)) {
+            destinationFloor = queue_get_next_order(currentFloor, direction);
+            currentState = (direction == DIRN_UP) ? MOVING_UP : MOVING_DOWN;
+        } 
+        else if (queue_has_orders()) { 
+            direction = (direction == DIRN_UP) ? DIRN_DOWN : DIRN_UP;
+            destinationFloor = queue_get_next_order(currentFloor, direction);
+            currentState = (direction == DIRN_UP) ? MOVING_UP : MOVING_DOWN;
+        } 
+        else {
+            currentState = IDLE;
+        }
+        break;
+        
         case MOVING_UP:
-            direction = DIRN_UP;
+        direction = DIRN_UP;
+        elevio_motorDirection(DIRN_UP);
+        
+        while (1) {
             orderScanner();
-            elevio_motorDirection(DIRN_UP);
-            while (currentFloor < destinationFloor) {
-                int floor = elevio_floorSensor();
-                if (floor != -1) {
-                    currentFloor = floor;
-                    elevio_floorIndicator(currentFloor);
+            int floor = elevio_floorSensor();
+            
+            if (floor != -1) {
+                currentFloor = floor;
+                elevio_floorIndicator(currentFloor);
+    
+                if (orders[currentFloor][BUTTON_HALL_UP] || orders[currentFloor][BUTTON_CAB] || 
+                    (currentFloor == destinationFloor)) {
+                    currentState = AT_DESTINATION;
+                    break;
                 }
-                //if (queue_get_next_order(currentFloor, direction) == currentFloor) {
-                orderScanner();
-                destinationFloor = queue_get_next_order(currentFloor, direction);
             }
-            elevio_motorDirection(DIRN_STOP);
-            currentState = AT_DESTINATION;
-            break;
+            usleep(10000);
+        }
+        break;
 
         case MOVING_DOWN:
-            direction = DIRN_DOWN;
+        direction = DIRN_DOWN;
+        elevio_motorDirection(DIRN_DOWN);
+        
+        while (1) {
             orderScanner();
-            elevio_motorDirection(DIRN_DOWN);
-            while (currentFloor > destinationFloor) {
-                orderScanner();
-                destinationFloor = queue_get_next_order(currentFloor, direction);
-                int floor = elevio_floorSensor();
-                if (floor != -1) {
-                    currentFloor = floor;
-                    elevio_floorIndicator(currentFloor);
+            int floor = elevio_floorSensor();
+            
+            if (floor != -1) {
+                currentFloor = floor;
+                elevio_floorIndicator(currentFloor);
+    
+                if (orders[currentFloor][BUTTON_HALL_DOWN] || orders[currentFloor][BUTTON_CAB] || 
+                    (currentFloor == destinationFloor)) {
+                    currentState = AT_DESTINATION;
+                    break;
                 }
-                //if (queue_get_next_order(currentFloor, direction) == currentFloor) { 
             }
-            elevio_motorDirection(DIRN_STOP);
-            currentState = AT_DESTINATION;
-            break;
+            usleep(10000);
+        }
+        break;
+/*       case AT_DESTINATION:
+        orderScanner();
+        elevio_floorIndicator(currentFloor);
+        elevio_doorOpenLamp(1);
+        sleep(3);
+        elevio_doorOpenLamp(0);
+        queue_clear_floor_orders(currentFloor);
+        if (queue_has_orders()) {
+            destinationFloor = queue_get_next_order(currentFloor, direction);
+            if (destinationFloor == -1) {
+                elevio_motorDirection(DIRN_STOP);
+                currentState = IDLE;
+                break;
+            } else if (destinationFloor > currentFloor) {
+                currentState = MOVING_UP;
+            } else if (destinationFloor < currentFloor) {
+                currentState = MOVING_DOWN;
+            }
+        } else {
+            currentState = IDLE;
+        }
+        break;
 
+        case MOVING_UP:
+        direction = DIRN_UP;
+        elevio_motorDirection(DIRN_UP);
+
+        while (1) {
+        orderScanner(); // Oppdater bestillinger underveis
+        int floor = elevio_floorSensor();
+
+        if (floor != -1) {
+            currentFloor = floor;
+            elevio_floorIndicator(currentFloor);
+
+            // Sjekk om vi skal stoppe her
+            if (orders[currentFloor][BUTTON_HALL_UP] || orders[currentFloor][BUTTON_CAB] || 
+                (currentFloor == destinationFloor)) {
+
+                elevio_motorDirection(DIRN_STOP);
+                queue_clear_floor_orders(currentFloor); // Fjern bestillingen fra køen
+                usleep(500000); // Kort pause for å simulere stopp
+                elevio_doorOpenLamp(1);
+                sleep(3);
+                elevio_doorOpenLamp(0);
+
+                // Sjekk om det er flere bestillinger i samme retning
+                if (!queue_has_orders_in_direction(DIRN_UP, currentFloor)) {
+                    if (queue_has_orders_in_direction(DIRN_DOWN, currentFloor)) {
+                        currentState = MOVING_DOWN; // Snu om det er bestillinger nedover
+                    } else {
+                        currentState = IDLE; // Gå til idle hvis ingen flere bestillinger
+                    }
+                    break;
+                }
+
+                destinationFloor = queue_get_next_order(currentFloor, direction);
+                elevio_motorDirection(DIRN_UP);
+            }
+        }
+        usleep(10000);
+        }
+        break; 
+
+        case MOVING_DOWN:
+        direction = DIRN_DOWN;
+        elevio_motorDirection(DIRN_DOWN);
+        
+        while (1) {
+        orderScanner(); // Oppdater bestillinger underveis
+        int floor = elevio_floorSensor();
+            
+        if (floor != -1) {
+            currentFloor = floor;
+            elevio_floorIndicator(currentFloor);
+
+            // Sjekk om vi skal stoppe her
+            if (orders[currentFloor][BUTTON_HALL_DOWN] || orders[currentFloor][BUTTON_CAB] || 
+                (currentFloor == destinationFloor)) {
+
+                elevio_motorDirection(DIRN_STOP);
+                queue_clear_floor_orders(currentFloor); // Fjern bestillingen fra køen
+                usleep(500000); // Kort pause for å simulere stopp
+                elevio_doorOpenLamp(1);
+                sleep(3);
+                elevio_doorOpenLamp(0);
+
+                // Sjekk om det er flere bestillinger i samme retning
+                if (!queue_has_orders_in_direction(DIRN_DOWN, currentFloor)) {
+                    if (queue_has_orders_in_direction(DIRN_UP, currentFloor)) {
+                        currentState = MOVING_UP; // Snu om det er bestillinger oppover
+                    } else {
+                        currentState = IDLE; // Gå til idle hvis ingen flere bestillinger
+                    }
+                    break;
+                }
+
+                destinationFloor = queue_get_next_order(currentFloor, direction);
+                elevio_motorDirection(DIRN_DOWN);
+            }
+        }
+        usleep(10000);
+        }
+        break;
+*/
         case EMERGENCY_STOP_FLOOR:
             elevio_motorDirection(DIRN_STOP);
             if (!stopButtonPressed && currentFloor != -1) {

@@ -33,6 +33,24 @@ int queue_has_orders() {
     return 0;
 }
 
+int queue_has_orders_in_direction(int direction, int current_floor) {
+    if (direction == DIRN_UP) {
+        for (int f = current_floor + 1; f < N_FLOORS; f++) {
+            if (orders[f][BUTTON_HALL_UP] || orders[f][BUTTON_CAB]) {
+                return 1; 
+            }
+        }
+    } else if (direction == DIRN_DOWN) {
+        for (int f = current_floor - 1; f >= 0; f--) {
+            if (orders[f][BUTTON_HALL_DOWN] || orders[f][BUTTON_CAB]) {
+                return 1; 
+            }
+        }
+    }
+    return 0;
+}
+
+
 int queue_get_next_order(int current_floor, int direction) {
     if (direction == DIRN_UP) {
         for (int f = current_floor + 1; f < N_FLOORS; f++) {
@@ -57,7 +75,7 @@ int queue_get_next_order(int current_floor, int direction) {
                     return f;
                 }
             }
-        }
+        }   
     }
     return -1;
 }
