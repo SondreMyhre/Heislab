@@ -2,9 +2,14 @@
 #include <stdlib.h>
 #include <sys/types.h>
 #include <sys/socket.h>
-#include <netdb.h>
+#include <string.h>
 #include <stdio.h>
 #include <pthread.h>
+#include <netdb.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
 
 #include "elevio.h"
 #include "con_load.h"
@@ -15,7 +20,7 @@ static pthread_mutex_t sockmtx;
 void elevio_init(void){
     char ip[16] = "localhost";
     char port[8] = "15657";
-    con_load("elevio.con",
+    con_load("source/driver/elevio.con",
         con_val("com_ip",   ip,   "%s")
         con_val("com_port", port, "%s")
     )

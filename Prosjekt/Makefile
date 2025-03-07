@@ -2,7 +2,7 @@
 EXECUTABLE  = elevator
 
 COMPILER    = clang
-CFLAGS      = -Wall -g -std=gnu11 -fsanitize=address
+CFLAGS      = -Wall -g -std=gnu11 -fsanitize=address -I./source/driver
 LDFLAGS     = -fsanitize=address
 EXCLUDE     = '*test*'
 
