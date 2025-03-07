@@ -1,12 +1,20 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "elevio.h"
+#include "driver/elevio.h"
 #include "order.h"
 
 #define N_FLOORS 4
 #define N_BUTTONS 3
 
 int orders[N_FLOORS][N_BUTTONS] = {0};
+
+void initOrders() {
+    for (int f = 0; f < N_FLOORS; f++) {
+        queue_clear_floor_orders(f);
+    }   
+}
+
+
 
 void queue_add_order(int floor, ButtonType button) {
     if (floor >= 0 && floor < N_FLOORS && button >= 0 && button < N_BUTTONS) {
@@ -36,13 +44,13 @@ int queue_has_orders() {
 int queue_has_orders_in_direction(int direction, int current_floor) {
     if (direction == DIRN_UP) {
         for (int f = current_floor + 1; f < N_FLOORS; f++) {
-            if (orders[f][BUTTON_HALL_UP] || orders[f][BUTTON_CAB]) {
+            if (orders[f][BUTTON_HALL_UP] || orders[f][BUTTON_CAB] || orders[3][BUTTON_HALL_DOWN]) {
                 return 1; 
             }
         }
     } else if (direction == DIRN_DOWN) {
         for (int f = current_floor - 1; f >= 0; f--) {
-            if (orders[f][BUTTON_HALL_DOWN] || orders[f][BUTTON_CAB]) {
+            if (orders[f][BUTTON_HALL_DOWN] || orders[f][BUTTON_CAB] || orders[0][BUTTON_HALL_UP]) {
                 return 1; 
             }
         }

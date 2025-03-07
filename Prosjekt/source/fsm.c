@@ -17,7 +17,7 @@ void elevator_fsm() {
     switch (currentState) {
         case INITIALIZING:
             printf("Heis: Søker etter etasje\n");
-            while(currentFloor == -1) {
+            while(1) {
                 elevio_motorDirection(DIRN_DOWN);
                 currentFloor = elevio_floorSensor();    
                 if (currentFloor != -1) {
@@ -26,6 +26,7 @@ void elevator_fsm() {
                     printf("Heis: Står i etasje %d\n", currentFloor);
                     direction = DIRN_STOP;
                     currentState = IDLE;
+                    break;
                 }
             }
             break;
@@ -64,6 +65,7 @@ void elevator_fsm() {
         queue_clear_floor_orders(currentFloor);
 
         for (int i = 0; i < 30; i++) { 
+            orderScanner();
             usleep(100000);
             if (elevio_stopButton()) {
                 currentState = STOP;
@@ -72,6 +74,7 @@ void elevator_fsm() {
         }
         if (currentState == STOP) break;
         while (elevio_obstruction()) {
+            orderScanner();
             usleep(100000);
             if (elevio_stopButton()) { 
                 currentState = STOP;
@@ -79,7 +82,7 @@ void elevator_fsm() {
             }
         }
         if (currentState == STOP) break;
-        sleep(3);
+        sleepScan(1000);
         elevio_doorOpenLamp(0);
         
 
@@ -262,7 +265,7 @@ void elevator_fsm() {
         for (int f = 0; f < N_FLOORS; f++) {
             queue_clear_floor_orders(f);
         }
-        if (currentFloor != -1) {
+        if (elevio_floorSensor() != -1) {
             elevio_doorOpenLamp(1);
         }
         while (elevio_stopButton()) {
@@ -279,7 +282,7 @@ void elevator_fsm() {
             destinationFloor = queue_get_next_order(currentFloor, direction);
             currentState = (destinationFloor > currentFloor) ? MOVING_UP : MOVING_DOWN;
         } else {
-            currentState = IDLE;
+            currentState = INITIALIZING;
         }
         break;
     }
@@ -287,6 +290,8 @@ void elevator_fsm() {
 
 void elevator_init() {
     elevio_init();
+    initOrders();
+    elevio_doorOpenLamp(0);
     currentState = INITIALIZING;
     currentFloor = -1;
     stopButtonPressed = 0;

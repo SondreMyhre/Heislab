@@ -3,7 +3,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "elevio.h"
+#include "driver/elevio.h"
 
 #define N_FLOORS 4
 #define N_BUTTONS 3
@@ -16,5 +16,6 @@ int queue_has_orders();
 int queue_get_next_order(int current_floor, int direction);
 void orderScanner();
 int queue_has_orders_in_direction(int direction, int current_floor);
+void initOrders();
 
 #endif 
