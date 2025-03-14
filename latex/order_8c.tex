@@ -1,0 +1,181 @@
+\hypertarget{order_8c}{}\doxysection{Heislab/\+Prosjekt/source/order.c File Reference}
+\label{order_8c}\index{Heislab/Prosjekt/source/order.c@{Heislab/Prosjekt/source/order.c}}
+
+
+Håndtering av heisens ordrekø.  
+
+
+{\ttfamily \#include $<$stdio.\+h$>$}\newline
+{\ttfamily \#include $<$stdlib.\+h$>$}\newline
+{\ttfamily \#include \char`\"{}driver/elevio.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}order.\+h\char`\"{}}\newline
+Include dependency graph for order.\+c\+:
+% FIG 0
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{order_8c_ae0592e3739e5e1e76234bb1caf9d1305}\label{order_8c_ae0592e3739e5e1e76234bb1caf9d1305}} 
+\#define \mbox{\hyperlink{order_8c_ae0592e3739e5e1e76234bb1caf9d1305}{N\+\_\+\+FLOORS}}~4
+\begin{DoxyCompactList}\small\item\em Antall etasjer i bygningen. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{order_8c_a271dda243b0f5bd7d2053d258eb71962}\label{order_8c_a271dda243b0f5bd7d2053d258eb71962}} 
+\#define \mbox{\hyperlink{order_8c_a271dda243b0f5bd7d2053d258eb71962}{N\+\_\+\+BUTTONS}}~3
+\begin{DoxyCompactList}\small\item\em Antall knapper per etasje. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{order_8c_a2155b93dc720d77543a24314774ad937}{init\+Orders}} ()
+\begin{DoxyCompactList}\small\item\em Initialiserer ordresystemet ved å fjerne alle ordrer. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{order_8c_a62caef129927cbd9ed30a01e77eebe07}{queue\+\_\+add\+\_\+order}} (int floor, Button\+Type button)
+\begin{DoxyCompactList}\small\item\em Legger til en ordre i køen. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{order_8c_a101ad948bf937c844dc1dcc912badb35}{queue\+\_\+clear\+\_\+floor\+\_\+orders}} (int floor)
+\begin{DoxyCompactList}\small\item\em Fjerner alle ordrer for en spesifikk etasje. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{order_8c_aa064f71f147713fa55967a21526ac7b2}{queue\+\_\+has\+\_\+orders}} ()
+\begin{DoxyCompactList}\small\item\em Sjekker om det finnes noen aktive ordrer. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{order_8c_a12b4d1c84ae0186c2b495fbb86de79a0}{queue\+\_\+has\+\_\+orders\+\_\+in\+\_\+direction}} (int \mbox{\hyperlink{fsm_8c_a886d551d5381dc3e53f17825ffc51641}{direction}}, int current\+\_\+floor)
+\begin{DoxyCompactList}\small\item\em Sjekker om det er ordrer i en spesifikk retning. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{order_8c_ad5f7925a62d3d1cfe0b0eccf0ab92dfc}{queue\+\_\+get\+\_\+next\+\_\+order}} (int current\+\_\+floor, int \mbox{\hyperlink{fsm_8c_a886d551d5381dc3e53f17825ffc51641}{direction}})
+\begin{DoxyCompactList}\small\item\em Henter neste bestilte etasje basert på nåværende etasje og retning. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{order_8c_a42d2388047f5047496fab6f76da243f7}{order\+Scanner}} ()
+\begin{DoxyCompactList}\small\item\em Skanner heispanelene for nye bestillinger og legger dem til i køen. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+int \mbox{\hyperlink{order_8c_a4cb690b9b5eb9affed4a8205b1c253e3}{orders}} \mbox{[}\mbox{\hyperlink{order_8h_ae0592e3739e5e1e76234bb1caf9d1305}{N\+\_\+\+FLOORS}}\mbox{]}\mbox{[}\mbox{\hyperlink{order_8h_a271dda243b0f5bd7d2053d258eb71962}{N\+\_\+\+BUTTONS}}\mbox{]} = \{0\}
+\begin{DoxyCompactList}\small\item\em Array som lagrer ordrestatus for hver etasje og knapp. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Håndtering av heisens ordrekø. 
+
+Denne filen inneholder funksjoner for å håndtere bestillinger (ordre) i heissystemet, inkludert lagring, sletting og henting av ordre basert på etasje og retning. 
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{order_8c_a2155b93dc720d77543a24314774ad937}\label{order_8c_a2155b93dc720d77543a24314774ad937}} 
+\index{order.c@{order.c}!initOrders@{initOrders}}
+\index{initOrders@{initOrders}!order.c@{order.c}}
+\doxysubsubsection{\texorpdfstring{initOrders()}{initOrders()}}
+{\footnotesize\ttfamily void init\+Orders (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Initialiserer ordresystemet ved å fjerne alle ordrer. 
+
+Initialiserer bestillingssystemet ved å fjerne alle tidligere bestillinger. \mbox{\Hypertarget{order_8c_a42d2388047f5047496fab6f76da243f7}\label{order_8c_a42d2388047f5047496fab6f76da243f7}} 
+\index{order.c@{order.c}!orderScanner@{orderScanner}}
+\index{orderScanner@{orderScanner}!order.c@{order.c}}
+\doxysubsubsection{\texorpdfstring{orderScanner()}{orderScanner()}}
+{\footnotesize\ttfamily void order\+Scanner (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Skanner heispanelene for nye bestillinger og legger dem til i køen. 
+
+Skanner etter nye bestillinger og legger dem til i køen. \mbox{\Hypertarget{order_8c_a62caef129927cbd9ed30a01e77eebe07}\label{order_8c_a62caef129927cbd9ed30a01e77eebe07}} 
+\index{order.c@{order.c}!queue\_add\_order@{queue\_add\_order}}
+\index{queue\_add\_order@{queue\_add\_order}!order.c@{order.c}}
+\doxysubsubsection{\texorpdfstring{queue\_add\_order()}{queue\_add\_order()}}
+{\footnotesize\ttfamily void queue\+\_\+add\+\_\+order (\begin{DoxyParamCaption}\item[{int}]{floor,  }\item[{Button\+Type}]{button }\end{DoxyParamCaption})}
+
+
+
+Legger til en ordre i køen. 
+
+Legger til en bestilling i bestillingsmatrisen.
+
+
+\begin{DoxyParams}{Parameters}
+{\em floor} & Etasjen hvor bestillingen gjøres. \\
+\hline
+{\em button} & Knappetypen som ble trykket (opp, ned eller kabin). \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{order_8c_a101ad948bf937c844dc1dcc912badb35}\label{order_8c_a101ad948bf937c844dc1dcc912badb35}} 
+\index{order.c@{order.c}!queue\_clear\_floor\_orders@{queue\_clear\_floor\_orders}}
+\index{queue\_clear\_floor\_orders@{queue\_clear\_floor\_orders}!order.c@{order.c}}
+\doxysubsubsection{\texorpdfstring{queue\_clear\_floor\_orders()}{queue\_clear\_floor\_orders()}}
+{\footnotesize\ttfamily void queue\+\_\+clear\+\_\+floor\+\_\+orders (\begin{DoxyParamCaption}\item[{int}]{floor }\end{DoxyParamCaption})}
+
+
+
+Fjerner alle ordrer for en spesifikk etasje. 
+
+Fjerner alle bestillinger for en spesifikk etasje.
+
+
+\begin{DoxyParams}{Parameters}
+{\em floor} & Etasjen som skal tømmes for ordre. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{order_8c_ad5f7925a62d3d1cfe0b0eccf0ab92dfc}\label{order_8c_ad5f7925a62d3d1cfe0b0eccf0ab92dfc}} 
+\index{order.c@{order.c}!queue\_get\_next\_order@{queue\_get\_next\_order}}
+\index{queue\_get\_next\_order@{queue\_get\_next\_order}!order.c@{order.c}}
+\doxysubsubsection{\texorpdfstring{queue\_get\_next\_order()}{queue\_get\_next\_order()}}
+{\footnotesize\ttfamily int queue\+\_\+get\+\_\+next\+\_\+order (\begin{DoxyParamCaption}\item[{int}]{current\+\_\+floor,  }\item[{int}]{direction }\end{DoxyParamCaption})}
+
+
+
+Henter neste bestilte etasje basert på nåværende etasje og retning. 
+
+Henter neste bestilling basert på heisens nåværende etasje og retning.
+
+
+\begin{DoxyParams}{Parameters}
+{\em current\+\_\+floor} & Nåværende etasje. \\
+\hline
+{\em direction} & Retningen heisen beveger seg i. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Etasjenummeret til neste ordre, eller -\/1 hvis ingen ordre finnes. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{order_8c_aa064f71f147713fa55967a21526ac7b2}\label{order_8c_aa064f71f147713fa55967a21526ac7b2}} 
+\index{order.c@{order.c}!queue\_has\_orders@{queue\_has\_orders}}
+\index{queue\_has\_orders@{queue\_has\_orders}!order.c@{order.c}}
+\doxysubsubsection{\texorpdfstring{queue\_has\_orders()}{queue\_has\_orders()}}
+{\footnotesize\ttfamily int queue\+\_\+has\+\_\+orders (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Sjekker om det finnes noen aktive ordrer. 
+
+Sjekker om det finnes noen aktive bestillinger.
+
+\begin{DoxyReturn}{Returns}
+1 hvis det er ordrer, ellers 0. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{order_8c_a12b4d1c84ae0186c2b495fbb86de79a0}\label{order_8c_a12b4d1c84ae0186c2b495fbb86de79a0}} 
+\index{order.c@{order.c}!queue\_has\_orders\_in\_direction@{queue\_has\_orders\_in\_direction}}
+\index{queue\_has\_orders\_in\_direction@{queue\_has\_orders\_in\_direction}!order.c@{order.c}}
+\doxysubsubsection{\texorpdfstring{queue\_has\_orders\_in\_direction()}{queue\_has\_orders\_in\_direction()}}
+{\footnotesize\ttfamily int queue\+\_\+has\+\_\+orders\+\_\+in\+\_\+direction (\begin{DoxyParamCaption}\item[{int}]{direction,  }\item[{int}]{current\+\_\+floor }\end{DoxyParamCaption})}
+
+
+
+Sjekker om det er ordrer i en spesifikk retning. 
+
+Sjekker om det finnes bestillinger i en gitt retning.
+
+
+\begin{DoxyParams}{Parameters}
+{\em direction} & Retningen (opp eller ned) som skal sjekkes. \\
+\hline
+{\em current\+\_\+floor} & Nåværende etasje. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+1 hvis det finnes ordrer i angitt retning, ellers 0. 
+\end{DoxyReturn}
+
+
+\doxysubsection{Variable Documentation}
+\mbox{\Hypertarget{order_8c_a4cb690b9b5eb9affed4a8205b1c253e3}\label{order_8c_a4cb690b9b5eb9affed4a8205b1c253e3}} 
+\index{order.c@{order.c}!orders@{orders}}
+\index{orders@{orders}!order.c@{order.c}}
+\doxysubsubsection{\texorpdfstring{orders}{orders}}
+{\footnotesize\ttfamily int orders\mbox{[}\mbox{\hyperlink{order_8h_ae0592e3739e5e1e76234bb1caf9d1305}{N\+\_\+\+FLOORS}}\mbox{]}\mbox{[}\mbox{\hyperlink{order_8h_a271dda243b0f5bd7d2053d258eb71962}{N\+\_\+\+BUTTONS}}\mbox{]} = \{0\}}
+
+
+
+Array som lagrer ordrestatus for hver etasje og knapp. 
+
+Global matrise som lagrer bestillinger. 

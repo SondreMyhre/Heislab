@@ -1,0 +1,148 @@
+\hypertarget{fsm_8c}{}\doxysection{Heislab/\+Prosjekt/source/fsm.c File Reference}
+\label{fsm_8c}\index{Heislab/Prosjekt/source/fsm.c@{Heislab/Prosjekt/source/fsm.c}}
+
+
+Implementasjon av finite state machine for heisen.  
+
+
+{\ttfamily \#include $<$stdio.\+h$>$}\newline
+{\ttfamily \#include $<$unistd.\+h$>$}\newline
+{\ttfamily \#include \char`\"{}driver/elevio.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}fsm.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}order.\+h\char`\"{}}\newline
+Include dependency graph for fsm.\+c\+:
+% FIG 0
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{fsm_8c_a3cd19d7749c1e467f7f605f902b84fee}\label{fsm_8c_a3cd19d7749c1e467f7f605f902b84fee}} 
+void \mbox{\hyperlink{fsm_8c_a3cd19d7749c1e467f7f605f902b84fee}{elevator\+\_\+fsm}} ()
+\begin{DoxyCompactList}\small\item\em Håndterer logikken for heisens finite state machine. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{fsm_8c_a459f250209099053fec8ae5baca9217a}{elevator\+\_\+init}} ()
+\begin{DoxyCompactList}\small\item\em Initialiserer heissystemet. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{fsm_8c_a418ef582796f824521b5a0ab7ab596e1}{elevator\+\_\+request\+\_\+floor}} (int floor)
+\begin{DoxyCompactList}\small\item\em Legger til en heisbestilling for en etasje. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{fsm_8c_a43c1fa80726330a9e6fd2e7ba64d1fc0}\label{fsm_8c_a43c1fa80726330a9e6fd2e7ba64d1fc0}} 
+void \mbox{\hyperlink{fsm_8c_a43c1fa80726330a9e6fd2e7ba64d1fc0}{elevator\+\_\+clear\+\_\+stop}} ()
+\begin{DoxyCompactList}\small\item\em Nullstiller stoppknappen og setter heisen i initialiseringsmodus. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{fsm_8c_acc53d4a54a62f5b62ca239153a3c9380}{elevator\+\_\+set\+\_\+obstruction}} (int status)
+\begin{DoxyCompactList}\small\item\em Setter obstruksjonsstatusen for heisen. \end{DoxyCompactList}\item 
+Elevator\+State \mbox{\hyperlink{fsm_8c_aa577ed1dd22fb2e06fc9e897fe0bbd38}{elevator\+\_\+get\+\_\+state}} ()
+\begin{DoxyCompactList}\small\item\em Henter heisens nåværende tilstand. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{fsm_8c_ad785f5909121c35151e975eb671d4ef9}{elevator\+\_\+get\+\_\+current\+\_\+floor}} ()
+\begin{DoxyCompactList}\small\item\em Henter heisens nåværende etasje. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{fsm_8c_aece3e34022b56029c8b774df6fa52b47}{sleep\+Scan}} (int milliseconds)
+\begin{DoxyCompactList}\small\item\em Sover i angitt tid samtidig som ordre overvåkes. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{fsm_8c_a9d7e8af417b6d543da691e9c0e2f6f9f}\label{fsm_8c_a9d7e8af417b6d543da691e9c0e2f6f9f}} 
+void \mbox{\hyperlink{fsm_8c_a9d7e8af417b6d543da691e9c0e2f6f9f}{clear\+Screen}} ()
+\begin{DoxyCompactList}\small\item\em Rydder terminalskjermen. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{fsm_8c_a1ab0858573c3490871d207be7171f1d3}\label{fsm_8c_a1ab0858573c3490871d207be7171f1d3}} 
+Elevator\+State \mbox{\hyperlink{fsm_8c_a1ab0858573c3490871d207be7171f1d3}{current\+State}} = INITIALIZING
+\begin{DoxyCompactList}\small\item\em Nåværende tilstand for heisen. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{fsm_8c_af2ae3c80eff5c67623f0511ce43b3c90}\label{fsm_8c_af2ae3c80eff5c67623f0511ce43b3c90}} 
+int \mbox{\hyperlink{fsm_8c_af2ae3c80eff5c67623f0511ce43b3c90}{current\+Floor}} = -\/1
+\begin{DoxyCompactList}\small\item\em Nåværende etasje. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{fsm_8c_a619a17c988d6a9da9488bdf78d03a388}\label{fsm_8c_a619a17c988d6a9da9488bdf78d03a388}} 
+int \mbox{\hyperlink{fsm_8c_a619a17c988d6a9da9488bdf78d03a388}{stop\+Button\+Pressed}} = 0
+\begin{DoxyCompactList}\small\item\em Indikerer om stoppknappen er trykket. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{fsm_8c_a24cefb99cf11460af7704a757e5737cf}\label{fsm_8c_a24cefb99cf11460af7704a757e5737cf}} 
+int \mbox{\hyperlink{fsm_8c_a24cefb99cf11460af7704a757e5737cf}{obstruction\+Detected}} = 0
+\begin{DoxyCompactList}\small\item\em Indikerer om en obstruksjon er oppdaget. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{fsm_8c_a23b69c35b1412c8b80f26ba12e699863}\label{fsm_8c_a23b69c35b1412c8b80f26ba12e699863}} 
+int \mbox{\hyperlink{fsm_8c_a23b69c35b1412c8b80f26ba12e699863}{destination\+Floor}} = -\/1
+\begin{DoxyCompactList}\small\item\em Måletasje for heisen. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{fsm_8c_a886d551d5381dc3e53f17825ffc51641}\label{fsm_8c_a886d551d5381dc3e53f17825ffc51641}} 
+int \mbox{\hyperlink{fsm_8c_a886d551d5381dc3e53f17825ffc51641}{direction}} = DIRN\+\_\+\+STOP
+\begin{DoxyCompactList}\small\item\em Nåværende retning. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Implementasjon av finite state machine for heisen. 
+
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{fsm_8c_ad785f5909121c35151e975eb671d4ef9}\label{fsm_8c_ad785f5909121c35151e975eb671d4ef9}} 
+\index{fsm.c@{fsm.c}!elevator\_get\_current\_floor@{elevator\_get\_current\_floor}}
+\index{elevator\_get\_current\_floor@{elevator\_get\_current\_floor}!fsm.c@{fsm.c}}
+\doxysubsubsection{\texorpdfstring{elevator\_get\_current\_floor()}{elevator\_get\_current\_floor()}}
+{\footnotesize\ttfamily int elevator\+\_\+get\+\_\+current\+\_\+floor (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Henter heisens nåværende etasje. 
+
+\begin{DoxyReturn}{Returns}
+Nåværende etasje (0-\/basert), eller -\/1 hvis ukjent. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{fsm_8c_aa577ed1dd22fb2e06fc9e897fe0bbd38}\label{fsm_8c_aa577ed1dd22fb2e06fc9e897fe0bbd38}} 
+\index{fsm.c@{fsm.c}!elevator\_get\_state@{elevator\_get\_state}}
+\index{elevator\_get\_state@{elevator\_get\_state}!fsm.c@{fsm.c}}
+\doxysubsubsection{\texorpdfstring{elevator\_get\_state()}{elevator\_get\_state()}}
+{\footnotesize\ttfamily Elevator\+State elevator\+\_\+get\+\_\+state (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Henter heisens nåværende tilstand. 
+
+\begin{DoxyReturn}{Returns}
+Gjeldende tilstand av typen Elevator\+State. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{fsm_8c_a459f250209099053fec8ae5baca9217a}\label{fsm_8c_a459f250209099053fec8ae5baca9217a}} 
+\index{fsm.c@{fsm.c}!elevator\_init@{elevator\_init}}
+\index{elevator\_init@{elevator\_init}!fsm.c@{fsm.c}}
+\doxysubsubsection{\texorpdfstring{elevator\_init()}{elevator\_init()}}
+{\footnotesize\ttfamily void elevator\+\_\+init (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Initialiserer heissystemet. 
+
+Setter opp maskinvare, tømmer ordrelisten og setter initialtilstander. \mbox{\Hypertarget{fsm_8c_a418ef582796f824521b5a0ab7ab596e1}\label{fsm_8c_a418ef582796f824521b5a0ab7ab596e1}} 
+\index{fsm.c@{fsm.c}!elevator\_request\_floor@{elevator\_request\_floor}}
+\index{elevator\_request\_floor@{elevator\_request\_floor}!fsm.c@{fsm.c}}
+\doxysubsubsection{\texorpdfstring{elevator\_request\_floor()}{elevator\_request\_floor()}}
+{\footnotesize\ttfamily void elevator\+\_\+request\+\_\+floor (\begin{DoxyParamCaption}\item[{int}]{floor }\end{DoxyParamCaption})}
+
+
+
+Legger til en heisbestilling for en etasje. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em floor} & Etasjen det legges inn en bestilling for. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{fsm_8c_acc53d4a54a62f5b62ca239153a3c9380}\label{fsm_8c_acc53d4a54a62f5b62ca239153a3c9380}} 
+\index{fsm.c@{fsm.c}!elevator\_set\_obstruction@{elevator\_set\_obstruction}}
+\index{elevator\_set\_obstruction@{elevator\_set\_obstruction}!fsm.c@{fsm.c}}
+\doxysubsubsection{\texorpdfstring{elevator\_set\_obstruction()}{elevator\_set\_obstruction()}}
+{\footnotesize\ttfamily void elevator\+\_\+set\+\_\+obstruction (\begin{DoxyParamCaption}\item[{int}]{status }\end{DoxyParamCaption})}
+
+
+
+Setter obstruksjonsstatusen for heisen. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em status} & 1 hvis obstruksjon er detektert, ellers 0. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{fsm_8c_aece3e34022b56029c8b774df6fa52b47}\label{fsm_8c_aece3e34022b56029c8b774df6fa52b47}} 
+\index{fsm.c@{fsm.c}!sleepScan@{sleepScan}}
+\index{sleepScan@{sleepScan}!fsm.c@{fsm.c}}
+\doxysubsubsection{\texorpdfstring{sleepScan()}{sleepScan()}}
+{\footnotesize\ttfamily void sleep\+Scan (\begin{DoxyParamCaption}\item[{int}]{milliseconds }\end{DoxyParamCaption})}
+
+
+
+Sover i angitt tid samtidig som ordre overvåkes. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em milliseconds} & Antall millisekunder å sove. \\
+\hline
+\end{DoxyParams}

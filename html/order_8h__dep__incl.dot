@@ -1,0 +1,13 @@
+digraph "Heislab/Prosjekt/source/order.h"
+{
+ // LATEX_PDF_SIZE
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  Node1 [label="Heislab/Prosjekt/source\l/order.h",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip="Håndtering av bestillinger i heissystemet."];
+  Node1 -> Node2 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node2 [label="Heislab/Prosjekt/source\l/elevator.c",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$elevator_8c.html",tooltip="Hovedprogram for heissystemet."];
+  Node1 -> Node3 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node3 [label="Heislab/Prosjekt/source\l/fsm.c",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$fsm_8c.html",tooltip="Implementasjon av finite state machine for heisen."];
+  Node1 -> Node4 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node4 [label="Heislab/Prosjekt/source\l/order.c",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$order_8c.html",tooltip="Håndtering av heisens ordrekø."];
+}
