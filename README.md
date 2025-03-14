@@ -1,7 +1,8 @@
 # Heislab
 Heislab TTK4235
 
-Atle Audun Johan Bystrøm
+Atle Audun Johan Bystrøm, 
+
 Sondre Myhre
 
 
